@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">StoryApp</string>
+    <string name="title_login_page">"login "</string>
+    <string name="message_login_page">silahkan login terlebih dahulu\n</string>
+    <string name="email">email\n</string>
+    <string name="password">password</string>
+    <string name="login">login</string>
+    <string name="title_signup_page">Daftar akun\n</string>
+    <string name="name">Nama</string>
+    <string name="signup">Daftar</string>
+    <string name="title_welcome_page">Selamat datang</string>
+    <string name="message_welcome_page">selamat belajar di aplikasi decoding</string>
+    <string name="logout">keluar</string>
+    <string name="description">diskripsi</string>
+    <string name="upload">unggah\n</string>
+    <string name="gallery">galery</string>
+    <string name="camera">camera</string>
+    <string name="title_activity_maps">MapsActivity</string>
+    <string name="normal_type">Normal</string>
+    <string name="satellite_type">Satellite</string>
+    <string name="terrain_type">Terrain</string>
+    <string name="hybrid_type">Hybrid</string>
+</resources>
