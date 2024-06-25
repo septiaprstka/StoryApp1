@@ -5,6 +5,8 @@ plugins {
 }
 
 android {
+
+    testOptions.unitTests.isReturnDefaultValues = true
     namespace = "com.example.storyapp"
     compileSdk = 34
 
@@ -16,6 +18,7 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
     }
 
     buildTypes {
