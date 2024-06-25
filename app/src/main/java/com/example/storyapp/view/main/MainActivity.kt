@@ -67,10 +67,9 @@ class MainActivity : AppCompatActivity() {
                 showToast("Tidak ada koneksi internet")
             } else {
                 setupRecyclerView()
-                viewModel.stories.observe(this) { stories ->
-                    (binding.listStory.adapter as StoryAdapter).submitList(stories)
+                viewModel.getStoryPaging().observe(this){
+                    (binding.listStory.adapter as StoryAdapter).submitData(lifecycle,it)
                 }
-                viewModel.getStoryPaging()
             }
         }
     }

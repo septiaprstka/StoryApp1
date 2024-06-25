@@ -1,4 +1,4 @@
-package com.example.storyapp.view.model
+package com.example.storyapp.view.map
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

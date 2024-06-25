@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.storyapp.data.repository.Repository
+import com.example.storyapp.view.map.MapViewModel
 
 class ViewModelFactory(
     private val repository:Repository,
