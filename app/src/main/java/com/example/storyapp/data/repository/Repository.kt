@@ -44,7 +44,7 @@ class Repository private constructor(
         return apiService.loginUser(email, password)
     }
 
-    suspend fun getStories(): LiveData<PagingData<ListStoryItem>> {
+   fun getStories(): LiveData<PagingData<ListStoryItem>> {
         return Pager(
             config = PagingConfig(
                 pageSize = 5

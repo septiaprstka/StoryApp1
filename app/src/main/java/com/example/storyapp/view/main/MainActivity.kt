@@ -70,7 +70,7 @@ class MainActivity : AppCompatActivity() {
                 viewModel.stories.observe(this) { stories ->
                     (binding.listStory.adapter as StoryAdapter).submitList(stories)
                 }
-                viewModel.getStory()
+                viewModel.getStoryPaging()
             }
         }
     }

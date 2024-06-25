@@ -33,11 +33,9 @@ class MainViewModel (private val repository: Repository) : ViewModel() {
         return repository.getSession().asLiveData()
     }
 
-    fun getStories() {
-        viewModelScope.launch {
-            repository.getStories()
-        }
-    }
+    fun getStoryPaging() = repository.getStories().cachedIn(viewModelScope)
+
+
     fun logout() {
         viewModelScope.launch {
             repository.logout()

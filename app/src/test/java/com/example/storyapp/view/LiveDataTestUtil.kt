@@ -3,6 +3,8 @@ package com.example.storyapp.view
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
+import androidx.paging.PagingData
+import com.example.storyapp.data.respon.ListStoryItem
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
@@ -12,7 +14,7 @@ fun <T> LiveData<T>.getOrAwaitValue(
     time: Long = 2,
     timeUnit: TimeUnit = TimeUnit.SECONDS,
     afterObserve: () -> Unit = {}
-): T {
+):  T {
     var data: T? = null
     val latch = CountDownLatch(1)
     val observer = object : Observer<T> {
