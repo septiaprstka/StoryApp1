@@ -19,6 +19,7 @@ import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.DrawableCompat
+import androidx.lifecycle.ViewModelProvider
 import com.example.storyapp.R
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -35,6 +36,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var mMap: GoogleMap
     private lateinit var binding: ActivityMapsBinding
+    private lateinit var viewModel: MapViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,10 +44,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         binding = ActivityMapsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
+
+        viewModel = ViewModelProvider(this).get(MapViewModel::class.java)
+        viewModel.getStoriesWithLocation()
     }
 
     @Suppress("DEPRECATION")
@@ -58,6 +62,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         menuInflater.inflate(R.menu.maps_option, menu)
         return true
     }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.normal_type -> {
@@ -81,9 +86,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         }
     }
-    override fun onMapReady(googleMap: GoogleMap) {
 
+    override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
+
+        val indo = LatLng(-6.200000, 106.816666)
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(indo))
+
         mMap.setOnMapClickListener { latLng ->
             mMap.addMarker(
                 MarkerOptions()
@@ -92,6 +101,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                     .snippet("Lat: ${latLng.latitude} Long: ${latLng.longitude}")
                     .icon(vectorToBitmap(R.drawable.ic_android_black_24dp, Color.parseColor("#3DDC84")))
             )
+            getMyLocation()
         }
 
         mMap.setOnPoiClickListener { pointOfInterest ->
@@ -104,11 +114,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             poiMarker?.showInfoWindow()
         }
 
-        val indo = LatLng(-6.200000, 106.816666)
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(indo))
-
         addManyMarker()
-        getMyLocation()
     }
 
     private val requestPermissionLauncher =
@@ -133,46 +139,19 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun addManyMarker() {
-        val tourismPlace = listOf(
-            TourismPlace("Floating Market Lembang", -6.8168954, 107.6151046,"ini lembang uhuyy"),
-            TourismPlace("The Great Asia Africa", -6.8331128, 107.6048483,"gimana bingung isis"),
-            TourismPlace("Rabbit Town", -6.8668408, 107.608081,"hahahahah submission akhir"),
-            TourismPlace("Alun-Alun Kota Bandung", -6.9218518, 107.6025294,"kapan bisa kesini"),
-            TourismPlace("Orchid Forest Cikole", -6.780725, 107.637409,"hutan hutan"),
-        )
-
-        val boundsBuilder = LatLngBounds.Builder()
-        tourismPlace.forEach { data ->
-            val latLng = LatLng(data.latitude, data.longitude)
-            mMap.addMarker(
-                MarkerOptions()
-                    .position(latLng)
-                    .title(data.name)
-                    .snippet(data.description)
-            )
-        }
-
-        try {
-            val bounds: LatLngBounds = boundsBuilder.build()
-            mMap.animateCamera(
-                CameraUpdateFactory.newLatLngBounds(
-                    bounds,
-                    resources.displayMetrics.widthPixels,
-                    resources.displayMetrics.heightPixels,
-                    300
+        viewModel.stories.observe(this) { stories ->
+            stories.forEach { story ->
+                val latLng = LatLng(story.lat as Double, story.lon as Double)
+                mMap.addMarker(
+                    MarkerOptions()
+                        .position(latLng)
+                        .title(story.name)
+                        .snippet(story.description)
                 )
-            )
-        } catch (e: IllegalStateException) {
-            e.printStackTrace()
-            Log.e(TAG, "No points included in the boundsBuilder.")
+            }
         }
     }
-    data class TourismPlace (
-        val name: String,
-        val latitude: Double,
-        val longitude: Double,
-        val description: String
-    )
+
     private fun vectorToBitmap(@DrawableRes id: Int, @ColorInt color: Int): BitmapDescriptor {
         val vectorDrawable = ResourcesCompat.getDrawable(resources, id, null)
         if (vectorDrawable == null) {
@@ -191,17 +170,3 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         return BitmapDescriptorFactory.fromBitmap(bitmap)
     }
 }
-//
-//    private fun addManyMarker() {
-//        viewModel.stories.observe(this) { stories ->
-//            stories.forEach {
-//                val latLng = LatLng(it.lat, it.lon)
-//                mMap.addMarker(
-//                    MarkerOptions()
-//                        .position(latLng)
-//                        .title(it.name)
-//                        .snippet(it.description)
-//                )
-//            }
-//        }
-//    }

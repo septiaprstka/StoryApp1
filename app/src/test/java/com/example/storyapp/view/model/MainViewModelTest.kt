@@ -28,13 +28,16 @@ import org.mockito.junit.MockitoJUnitRunner
 
 @ExperimentalCoroutinesApi
 @RunWith(MockitoJUnitRunner::class)
-class MainViewModelTest{
+class MainViewModelTest {
     @get:Rule
     val instantExecutorRule = InstantTaskExecutorRule()
+
     @get:Rule
     val mainDispatcherRules = MainDispatcherRule()
+
     @Mock
     private lateinit var repository: Repository
+
 
     @Test
     fun `when Get Story Should Not Null and Return Data`() = runTest {
@@ -45,7 +48,8 @@ class MainViewModelTest{
         Mockito.`when`(repository.getStories()).thenReturn(expectedStory)
 
         val mainViewModel = MainViewModel(repository)
-        val actualStory: PagingData<ListStoryItem> = mainViewModel.getStoryPaging().getOrAwaitValue()
+        val actualStory: PagingData<ListStoryItem> =
+            mainViewModel.getStoryPaging().getOrAwaitValue()
 
         val differ = AsyncPagingDataDiffer(
             diffCallback = StoryAdapter.DIFF_CALLBACK,
@@ -57,10 +61,10 @@ class MainViewModelTest{
         assertNotNull(differ.snapshot())
         assertEquals(dummyStory.size, differ.snapshot().size)
         assertEquals(dummyStory[0], differ.snapshot()[0])
-   }
+    }
 
-
-    class QuotePagingSource(private val items: List<ListStoryItem>) : PagingSource<Int, ListStoryItem>() {
+    class QuotePagingSource(private val items: List<ListStoryItem>) :
+        PagingSource<Int, ListStoryItem>() {
         companion object {
             fun snapshot(items: List<ListStoryItem>): PagingData<ListStoryItem> {
                 return PagingData.from(items)
@@ -71,17 +75,20 @@ class MainViewModelTest{
             return 0
         }
 
-        override suspend fun load(params: LoadParams<Int>): LoadResult<Int, ListStoryItem> {return LoadResult.Page(data = items,
-            prevKey = null,
-            nextKey = null
-        )
+        override suspend fun load(params: LoadParams<Int>): LoadResult<Int, ListStoryItem> {
+            return LoadResult.Page(
+                data = items,
+                prevKey = null,
+                nextKey = null
+            )
         }
     }
 
-val noopListUpdateCallback = object : ListUpdateCallback {
-    override fun onInserted(position: Int, count: Int) {}
-    override fun onRemoved(position: Int, count: Int) {}
-    override fun onMoved(fromPosition: Int, toPosition: Int) {}
-    override fun onChanged(position: Int, count: Int, payload: Any?) {}
+    val noopListUpdateCallback = object : ListUpdateCallback {
+        override fun onInserted(position: Int, count: Int) {}
+        override fun onRemoved(position: Int, count: Int) {}
+        override fun onMoved(fromPosition: Int, toPosition: Int) {}
+        override fun onChanged(position: Int, count: Int, payload: Any?) {}
+    }
 }
-}
+

@@ -38,58 +38,59 @@ class RegisterActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         playAnimation()
-
         setupView()
         setupAction()
         nameValidation()
         emailValidation()
 
-        viewModel.registerResponse.observe(this) {
-            if (it.error) {
-                showToast(it.message)
+        viewModel.registerResponse.observe(this) { response ->
+            if (response.error) {
+                showToast(response.message)
             } else {
-                AlertDialog.Builder(this).apply {
-                    setTitle("Register Akun!")
-                    setMessage(it.message)
-                    setCancelable(false)
-                    val alertDialog = create()
-                    alertDialog.show()
-
-                    Handler(Looper.getMainLooper()).postDelayed({
-                        alertDialog.dismiss()
-                        val intent = Intent(context, LoginActivity::class.java)
-                        startActivity(intent)
-                        finish()
-                    }, 2000)
-                }
+                showRegistrationDialog(response .message)
             }
         }
-        viewModel.error.observe(this) {
-            showToast(it)
-        }
 
+        viewModel.error.observe(this) { errorMessage ->
+            showToast(errorMessage)
+        }
+    }
+
+    private fun showRegistrationDialog(message: String) {
+        val dialog = AlertDialog.Builder(this).apply {
+            setTitle("Register Akun!")
+            setMessage(message)
+            setCancelable(false)
+        }.create()
+
+        dialog.show()
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            dialog.dismiss()
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
+        }, 2000)
     }
 
     private fun playAnimation() {
-        ObjectAnimator.ofFloat(binding.imageview, View.TRANSLATION_X, -30f, 30f).apply {
+        val imageAnimator = ObjectAnimator.ofFloat(binding.imageview, View.TRANSLATION_X, -30f, 30f).apply {
             duration = 6000
             repeatCount = ObjectAnimator.INFINITE
             repeatMode = ObjectAnimator.REVERSE
-        }.start()
+        }
 
-        val title = ObjectAnimator.ofFloat(binding.titleTextView, View.ALPHA, 1f).setDuration(200)
-        val name =
-            ObjectAnimator.ofFloat(binding.nameeditTextLayout, View.ALPHA, 1f).setDuration(200)
-        val email =
-            ObjectAnimator.ofFloat(binding.emailEditTextLayout, View.ALPHA, 1f).setDuration(200)
-        val password =
-            ObjectAnimator.ofFloat(binding.passwordEditTextLayout, View.ALPHA, 1f).setDuration(200)
-        val register = ObjectAnimator.ofFloat(binding.signupbutton, View.ALPHA, 1f).setDuration(200)
+        val titleAnimator = ObjectAnimator.ofFloat(binding.titleTextView, View.ALPHA, 1f).setDuration(200)
+        val nameAnimator = ObjectAnimator.ofFloat(binding.nameeditTextLayout, View.ALPHA, 1f).setDuration(200)
+        val emailAnimator = ObjectAnimator.ofFloat(binding.emailEditTextLayout, View.ALPHA, 1f).setDuration(200)
+        val passwordAnimator = ObjectAnimator.ofFloat(binding.passwordEditTextLayout, View.ALPHA, 1f).setDuration(200)
+        val registerAnimator = ObjectAnimator.ofFloat(binding.signupbutton, View.ALPHA, 1f).setDuration(200)
 
         AnimatorSet().apply {
-            playSequentially(title, name, email, password, register)
+            playSequentially(titleAnimator, nameAnimator, emailAnimator, passwordAnimator, registerAnimator)
             start()
         }
+
+        imageAnimator.start()
     }
 
     private fun setupView() {
@@ -133,17 +134,9 @@ class RegisterActivity : AppCompatActivity() {
                 val name = s.toString()
 
                 binding.nameeditTextLayout.error = when {
-                    name.isEmpty() -> {
-                        "Nama tidak boleh kosong"
-                    }
-
-                    name.length < 5 -> {
-                        "Nama minimal 5 karakter"
-                    }
-
-                    else -> {
-                        ""
-                    }
+                    name.isEmpty() -> "Nama tidak boleh kosong"
+                    name.length < 5 -> "Nama minimal 5 karakter"
+                    else -> null
                 }
             }
 
@@ -159,17 +152,9 @@ class RegisterActivity : AppCompatActivity() {
                 val email = s.toString()
 
                 binding.emailEditTextLayout.error = when {
-                    email.isEmpty() -> {
-                        "Email tidak boleh kosong"
-                    }
-
-                    !email.contains("@") || !email.contains(".") -> {
-                        "Email tidak valid"
-                    }
-
-                    else -> {
-                        ""
-                    }
+                    email.isEmpty() -> "Email tidak boleh kosong"
+                    !email.contains("@") || !email.contains(".") -> "Email tidak valid"
+                    else -> null
                 }
             }
 
@@ -180,5 +165,4 @@ class RegisterActivity : AppCompatActivity() {
     private fun showToast(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
-
 }
